@@ -44,3 +44,42 @@
 <h3 align="center">↓ ↓ ↓</h3>
 
 <h1 align="center"><a href="https://github.com/airflow-helm/charts/tree/main/charts/airflow">Chart Homepage</a></h1>
+
+
+
+NAME: airflow-cluster
+LAST DEPLOYED: Mon Jun 17 12:59:31 2024
+NAMESPACE: airflow-cluster
+STATUS: deployed
+REVISION: 1
+TEST SUITE: None
+NOTES:
+========================================================================
+Thanks for deploying Apache Airflow with the User-Community Helm Chart!
+
+====================
+        TIPS
+====================
+
+You have NOT set up persistence for worker task logs, do this by:
+  1. Using a PersistentVolumeClaim with `logs.persistence.*`
+  2. Using remote logging with `AIRFLOW__LOGGING__REMOTE_LOGGING`
+
+It looks like you have NOT exposed the Airflow Webserver, do this by:
+  1. Using a Kubernetes Ingress with `ingress.*`
+  2. Using a Kubernetes LoadBalancer/NodePort type Service with `web.service.type`
+
+Use these commands to port-forward the Services to your localhost:
+  * Airflow Webserver:  kubectl port-forward svc/airflow-cluster-web 8080:8080 --namespace airflow-cluster
+  * Flower Dashboard:   kubectl port-forward svc/airflow-cluster-flower 5555:5555 --namespace airflow-cluster
+
+====================
+      WARNINGS
+====================
+[HIGH] using the embedded postgres database is NOT suitable for production!
+  * HELP: use an external postgres/mysql database with `externalDatabase.*`
+
+[MEDIUM] the scheduler "task creation check" is disabled, the scheduler may not be restarted if it deadlocks!
+  * HELP: configure the check with `scheduler.livenessProbe.taskCreationCheck.*`
+
+========================================================================

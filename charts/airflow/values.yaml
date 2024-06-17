@@ -716,7 +716,7 @@ web:
   ##   https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#resourcerequirements-v1-core
   ##
   resources: {}
-
+  
   ## the nodeSelector configs for the web Pods
   ## - docs for nodeSelector:
   ##   https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#nodeselector
@@ -788,7 +788,7 @@ web:
     annotations: {}
     sessionAffinity: "None"
     sessionAffinityConfig: {}
-    type: ClusterIP
+    type: LoadBalancer
     externalPort: 8080
     loadBalancerIP: ""
     loadBalancerSourceRanges: []
