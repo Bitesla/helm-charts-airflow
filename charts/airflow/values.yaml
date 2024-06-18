@@ -670,7 +670,6 @@ scheduler:
   ##   https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#container-v1-core
   ##
   extraInitContainers: []
-
 ###################################
 ## COMPONENT | Airflow Webserver
 ###################################
