@@ -788,7 +788,8 @@ web:
     sessionAffinity: "None"
     sessionAffinityConfig: {}
     type: LoadBalancer
-    externalPort: 8080
+    externalPort: 80   # Change the external port to 80
+    targetPort: 8080   # This is the port the Airflow web server is listening on inside the pod
     loadBalancerIP: ""
     loadBalancerSourceRanges: []
     nodePort:
