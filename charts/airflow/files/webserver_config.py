@@ -9,6 +9,8 @@
 # # use embedded DB for auth
 # AUTH_TYPE = AUTH_DB
 
+
+
 #
 # Licensed to the Apache Software Foundation (ASF) under one
 # or more contributor license agreements.  See the NOTICE file
@@ -27,20 +29,22 @@
 # specific language governing permissions and limitations
 # under the License.
 """Default configuration for the Airflow webserver"""
-from __future__ import annotations
+from airflow.www.fab_security.manager import AUTH_OAUTH
+from airflow.www.security import AirflowSecurityManager
+from flask_appbuilder import expose
+from flask_appbuilder.security.views import AuthOAuthView
 import os
 import logging
 import jwt
 import requests
 from base64 import b64decode
 from cryptography.hazmat.primitives import serialization
+from __future__ import annotations
 from tokenize import Exponent
-from airflow.www.fab_security.manager import AUTH_OAUTH
-from airflow.www.security import AirflowSecurityManager
-from flask_appbuilder import expose
-from flask_appbuilder.security.views import AuthOAuthView
+
 basedir = os.path.abspath(os.path.dirname(__file__))
 log = logging.getLogger(__name__)
+
 APP_THEME = "simplex.css"
 # Flask-WTF flag for CSRF
 WTF_CSRF_ENABLED = True
@@ -115,7 +119,7 @@ class CustomSecurityManager(AirflowSecurityManager):
     def oauth_user_info(self, provider, response):
         if provider == PROVIDER_NAME:
             token = response["access_token"]
-            me = jwt.decode(token, public_key, algorithms=['HS256', 'RS256'], audience=CLIENT_ID)
+            me = jwt.decode(token, public_key, algorithms=['HS256', 'RS256'], audience="account")
             # sample of resource_access
             # {
             #   "resource_access": { "airflow": { "roles": ["airflow_admin"] }}
