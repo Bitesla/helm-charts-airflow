@@ -138,4 +138,3 @@ class CustomSecurityManager(AirflowSecurityManager):
             return {}
         
 SECURITY_MANAGER_CLASS = CustomSecurityManager
-

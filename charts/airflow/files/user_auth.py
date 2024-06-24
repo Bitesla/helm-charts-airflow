@@ -57,7 +57,7 @@ def auth_current_user() -> User | None:
         
         token = str.replace(str(request.headers['Authorization']), 'Bearer ', '')
         me = jwt.decode(token, public_key, algorithms=['HS256', 'RS256'], audience="account")
-        groups = me["resource_access"]["stage-airflow"]["roles"] # unsafe
+        groups = me["resource_access"]["airflow"]["roles"] # unsafe
         if len(groups) < 1:
             groups = ["airflow_public"]
         else:
