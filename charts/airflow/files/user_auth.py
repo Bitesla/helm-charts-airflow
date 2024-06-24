@@ -38,7 +38,7 @@ from cryptography.hazmat.primitives import serialization
 CLIENT_AUTH: tuple[str, str] | Any | None = None
 log = logging.getLogger(__name__)
 CLIENT_ID = 'airflow'
-OIDC_ISSUER = 'https://keycloak.homelab.local/auth/realms/homelab'
+OIDC_ISSUER = 'https://stage-auth.bitesla.net/realms/stage'
 req = requests.get(OIDC_ISSUER)
 key_der_base64 = req.json()["public_key"]
 key_der = b64decode(key_der_base64.encode())
@@ -56,8 +56,8 @@ def auth_current_user() -> User | None:
             return None
         
         token = str.replace(str(request.headers['Authorization']), 'Bearer ', '')
-        me = jwt.decode(token, public_key, algorithms=['HS256', 'RS256'], audience=CLIENT_ID)
-        groups = me["resource_access"]["airflow"]["roles"] # unsafe
+        me = jwt.decode(token, public_key, algorithms=['HS256', 'RS256'], audience="account")
+        groups = me["resource_access"]["stage-airflow"]["roles"] # unsafe
         if len(groups) < 1:
             groups = ["airflow_public"]
         else:

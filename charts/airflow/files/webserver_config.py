@@ -9,8 +9,6 @@
 # # use embedded DB for auth
 # AUTH_TYPE = AUTH_DB
 
-
-
 #
 # Licensed to the Apache Software Foundation (ASF) under one
 # or more contributor license agreements.  See the NOTICE file
@@ -29,22 +27,20 @@
 # specific language governing permissions and limitations
 # under the License.
 """Default configuration for the Airflow webserver"""
-from airflow.www.fab_security.manager import AUTH_OAUTH
-from airflow.www.security import AirflowSecurityManager
-from flask_appbuilder import expose
-from flask_appbuilder.security.views import AuthOAuthView
+from __future__ import annotations
 import os
 import logging
 import jwt
 import requests
 from base64 import b64decode
 from cryptography.hazmat.primitives import serialization
-from __future__ import annotations
 from tokenize import Exponent
-
+from airflow.www.fab_security.manager import AUTH_OAUTH
+from airflow.www.security import AirflowSecurityManager
+from flask_appbuilder import expose
+from flask_appbuilder.security.views import AuthOAuthView
 basedir = os.path.abspath(os.path.dirname(__file__))
 log = logging.getLogger(__name__)
-
 APP_THEME = "simplex.css"
 # Flask-WTF flag for CSRF
 WTF_CSRF_ENABLED = True
@@ -81,7 +77,7 @@ AUTH_ROLES_MAPPING = {
   "airflow_public": ["Public"],
 }
 PROVIDER_NAME = 'keycloak'
-CLIENT_ID = 'stage-airflow'
+CLIENT_ID = 'airflow'
 CLIENT_SECRET = 'HbL6S3jEpP2GUt4m7V79cQE8vJ0CG6dX'
 OIDC_ISSUER = 'https://stage-auth.bitesla.net/realms/stage'
 OIDC_BASE_URL = "https://stage-auth.bitesla.net/realms/stage/protocol/openid-connect/auth"
