@@ -35,9 +35,6 @@ airflow:
   ## - set `AIRFLOW__WEBSERVER__SECRET_KEY` with `airflow.extraEnv` from a Secret to avoid storing this in your values
   ##
   webserverSecretKey: "5xZoGohYiPax9VmHVuCvOd"
-  
-  config:
-    AIRFLOW__API__AUTH_BACKENDS: "user_auth"
 
   ## a list of users to create
   ## - templates can ONLY be used in: `password`, `email`, `firstName`, `lastName`
