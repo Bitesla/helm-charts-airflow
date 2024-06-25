@@ -84,9 +84,9 @@ class CustomSecurityManager(AirflowSecurityManager):
     def oauth_user_info(self, provider, response):
         if provider == PROVIDER_NAME:
             token = response["access_token"]
-            me = jwt.decode(token, public_key, algorithms=['RS256'], audience="account")
+            me = jwt.decode(token, public_key, algorithms=['HS256','RS256'], audience=CLIENT_ID)
             resource_access = me.get("resource_access", {})
-            airflow_roles = resource_access.get("airflow", {}).get("roles", [])
+            airflow_roles = resource_access.get(CLIENT_ID, {}).get("roles", [])
             groups = airflow_roles if airflow_roles else ["airflow_public"]
             userinfo = {
                 "username": me.get("preferred_username"),
@@ -97,6 +97,7 @@ class CustomSecurityManager(AirflowSecurityManager):
             }
             log.info("user info: {0}".format(userinfo))
             return userinfo
-        return {}
+        else:
+            return {}
 
 SECURITY_MANAGER_CLASS = CustomSecurityManager

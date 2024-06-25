@@ -1,27 +1,3 @@
-# user_auth.py is an item that must be set when using OAuth in REST API. If you do not need to use JWT Token in REST API, you do not need to proceed with the configuration. If not set, the REST API must be called using the simple authentication method, which is the ID and password method. Copy the user_auth.py file to the path of the PYTHONPATH environment variable.
-
-# Licensed to the Apache Software Foundation (ASF) under one
-# or more contributor license agreements.  See the NOTICE file
-# distributed with this work for additional information
-# regarding copyright ownership.  The ASF licenses this file
-# to you under the Apache License, Version 2.0 (the
-# "License"); you may not use this file except in compliance
-# with the License.  You may obtain a copy of the License at
-#
-#   http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing,
-# software distributed under the License is distributed on an
-# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-# KIND, either express or implied.  See the License for the
-# specific language governing permissions and limitations
-# under the License.
-"""
-   User authentication backend
-   Referencies
-     - https://flask-appbuilder.readthedocs.io/en/latest/_modules/flask_appbuilder/security/manager.html
-     - https://github.com/apache/airflow/blob/main/airflow/api/auth/backend/basic_auth.py
-"""
 from __future__ import annotations
 from functools import wraps
 from typing import Any, Callable, TypeVar, cast
@@ -56,12 +32,12 @@ def auth_current_user() -> User | None:
             return None
         
         token = str.replace(str(request.headers['Authorization']), 'Bearer ', '')
-        me = jwt.decode(token, public_key, algorithms=['HS256', 'RS256'], audience="account")
-        groups = me["resource_access"]["airflow"]["roles"] # unsafe
+        me = jwt.decode(token, public_key, algorithms=['HS256', 'RS256'], audience=CLIENT_ID)
+        groups = me["resource_access"][CLIENT_ID]["roles"] # unsafe
         if len(groups) < 1:
             groups = ["airflow_public"]
         else:
-            groups = [str for str in groups if "airflow" in str]
+            groups = [str for str in groups if CLIENT_ID in str]
         userinfo = {
             "username": me.get("preferred_username"),
             "email": me.get("email"),
