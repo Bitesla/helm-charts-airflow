@@ -688,7 +688,10 @@ web:
   ##   extraPipPackages:
   ##     - "SomeProject==1.0.0"
   ##
-  extraPipPackages: []
+  extraPipPackages:
+    - "pyjwt"
+    - "requests"
+    - "cryptography"
 
   ## extra VolumeMounts for the web Pods
   ## - spec for VolumeMount:
