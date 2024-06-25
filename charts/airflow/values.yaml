@@ -35,6 +35,8 @@ airflow:
   ## - set `AIRFLOW__WEBSERVER__SECRET_KEY` with `airflow.extraEnv` from a Secret to avoid storing this in your values
   ##
   webserverSecretKey: "5xZoGohYiPax9VmHVuCvOd"
+  
+  config: {}
 
   ## a list of users to create
   ## - templates can ONLY be used in: `password`, `email`, `firstName`, `lastName`
@@ -679,12 +681,6 @@ web:
     timeoutSeconds: 5
     failureThreshold: 6
 
-  ## extra pip packages to install in the web Pods
-  ##
-  ## ____ EXAMPLE _______________
-  ##   extraPipPackages:
-  ##     - "SomeProject==1.0.0"
-  ##
   extraPipPackages:
     - "pyjwt"
     - "requests"
