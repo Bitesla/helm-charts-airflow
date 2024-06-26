@@ -40,13 +40,22 @@ AUTH_ROLES_MAPPING = {
   "airflow_public": ["Public"],
 }
 
+# PROVIDER_NAME = 'keycloak'
+# CLIENT_ID = 'airflow'
+# CLIENT_SECRET = 'HbL6S3jEpP2GUt4m7V79cQE8vJ0CG6dX'
+# OIDC_ISSUER = 'https://stage-auth.bitesla.net/realms/stage'
+# OIDC_BASE_URL = "https://stage-auth.bitesla.net/realms/stage/protocol/openid-connect"
+# OIDC_TOKEN_URL = f"{OIDC_BASE_URL}/token"
+# OIDC_AUTH_URL = f"{OIDC_BASE_URL}/auth"
+
 PROVIDER_NAME = 'keycloak'
 CLIENT_ID = 'airflow'
 CLIENT_SECRET = 'HbL6S3jEpP2GUt4m7V79cQE8vJ0CG6dX'
 OIDC_ISSUER = 'https://stage-auth.bitesla.net/realms/stage'
-OIDC_BASE_URL = "https://stage-auth.bitesla.net/realms/stage/protocol/openid-connect"
-OIDC_TOKEN_URL = f"{OIDC_BASE_URL}/token"
-OIDC_AUTH_URL = f"{OIDC_BASE_URL}/auth"
+OIDC_BASE_URL = "https://stage-auth.bitesla.net/realms/stage/protocol/openid-connect/auth"
+OIDC_TOKEN_URL = "https://stage-auth.bitesla.net/realms/stage/protocol/openid-connect/token"
+OIDC_AUTH_URL = "https://stage-auth.bitesla.net/realms/stage/protocol/openid-connect/auth"
+
 
 # When using OAuth Auth, uncomment to setup provider(s) info
 OAUTH_PROVIDERS = [{
@@ -76,7 +85,7 @@ class CustomAuthRemoteUserView(AuthOAuthView):
     def logout(self):
         """Delete access token before logging out."""
         return super().logout()
-    
+
 
 class CustomSecurityManager(AirflowSecurityManager):
     authoauthview = CustomAuthRemoteUserView
