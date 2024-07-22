@@ -36,7 +36,8 @@ airflow:
   ##
   webserverSecretKey: "5xZoGohYiPax9VmHVuCvOd"
   
-  config: {}
+  config: 
+    AIRFLOW__CORE__DAGS_FOLDER: "s3://bitesla-dag-storage/dags/"
 
   ## a list of users to create
   ## - templates can ONLY be used in: `password`, `email`, `firstName`, `lastName`
@@ -97,7 +98,19 @@ airflow:
   ## - spec for EnvVar:
   ##   https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#envvar-v1-core
   ##
-  extraEnv: []
+  extraEnv:
+    - name: AWS_ACCESS_KEY_ID
+      valueFrom:
+        secretKeyRef:
+          name: aws-credentials
+          key: aws_access_key_id
+    - name: AWS_SECRET_ACCESS_KEY
+      valueFrom:
+        secretKeyRef:
+          name: aws-credentials
+          key: aws_secret_access_key
+    - name: AWS_DEFAULT_REGION
+      value: "your-aws-region"
 
   ## extra containers for the airflow Pods
   ## - spec for Container:
@@ -1193,14 +1206,21 @@ logs:
 dags:
   ## the airflow dags folder
   ##
-  path: /opt/airflow/dags
+  #path: /opt/airflow/dags
+
+  # Disable the default DAGs directory volume
+  gitSync:
+    enabled: false
+  
+  persistence:
+    enabled: false
 
   ## configs for the dags PVC
   ##
   persistence:
     ## if a persistent volume is mounted at `dags.path`
     ##
-    enabled: false
+    enabled: true
 
     ## the name of an existing PVC to use
     ##
@@ -1219,7 +1239,7 @@ dags:
     ## the access mode of the PVC
     ## - [WARNING] must be "ReadOnlyMany" or "ReadWriteMany" otherwise airflow pods will fail to start
     ##
-    accessMode: ReadOnlyMany
+    accessMode: ReadWriteMany
 
     ## the size of PVC to request
     ##
