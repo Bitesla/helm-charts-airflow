@@ -37,7 +37,7 @@ airflow:
   webserverSecretKey: "5xZoGohYiPax9VmHVuCvOd"
   
   config: 
-    AIRFLOW__CORE__DAGS_FOLDER: "s3://bitesla-dag-storage/dags/"
+    AIRFLOW__CORE__DAGS_FOLDER: "s3://bitesla-dag-storage/dags"
 
   ## a list of users to create
   ## - templates can ONLY be used in: `password`, `email`, `firstName`, `lastName`
@@ -110,7 +110,7 @@ airflow:
           name: aws-credentials
           key: aws_secret_access_key
     - name: AWS_DEFAULT_REGION
-      value: "your-aws-region"
+      value: "us-east-1"
 
   ## extra containers for the airflow Pods
   ## - spec for Container:
@@ -1168,7 +1168,7 @@ flower:
 logs:
   ## the airflow logs folder
   ##
-  path: /opt/airflow/logs
+  path: "/opt/airflow/logs"
 
   ## configs for the logs PVC
   ##
@@ -1206,7 +1206,7 @@ logs:
 dags:
   ## the airflow dags folder
   ##
-  #path: /opt/airflow/dags
+  path: "s3://bitesla-dag-storage/dags"
 
   # Disable the default DAGs directory volume
   gitSync:
@@ -1220,7 +1220,7 @@ dags:
   persistence:
     ## if a persistent volume is mounted at `dags.path`
     ##
-    enabled: true
+    enabled: false
 
     ## the name of an existing PVC to use
     ##
