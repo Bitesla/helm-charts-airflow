@@ -36,8 +36,8 @@ airflow:
   ##
   webserverSecretKey: "5xZoGohYiPax9VmHVuCvOd"
   
-  config: 
-    AIRFLOW__CORE__DAGS_FOLDER: "s3://bitesla-dag-storage/dags"
+  config: {}
+    # AIRFLOW__CORE__DAGS_FOLDER: "s3://bitesla-dag-storage/dags"
 
   ## a list of users to create
   ## - templates can ONLY be used in: `password`, `email`, `firstName`, `lastName`
