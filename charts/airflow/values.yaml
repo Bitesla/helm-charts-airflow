@@ -86,7 +86,8 @@ airflow:
   ##   extraPipPackages:
   ##     - "SomeProject==1.0.0"
   ##
-  extraPipPackages: []
+  extraPipPackages:
+    - apache-airflow-providers-amazon
 
   ## pip packages that are protected from upgrade/downgrade by `extraPipPackages`
   ## - [WARNING] Pods will fail to start if `extraPipPackages` would cause these packages to change versions
