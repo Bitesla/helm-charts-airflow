@@ -129,7 +129,10 @@ airflow:
   ## - spec for Volume:
   ##   https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#volume-v1-core
   ##
-  extraVolumes: []
+  extraVolumes:
+    - name: dags
+    persistentVolumeClaim:
+      claimName: airflow-dags
 
   ## kubernetes cluster domain name
   ## - configured in the kubelet with `--cluster-domain` flag (deprecated):
@@ -385,6 +388,25 @@ airflow:
     ##
     safeToEvict: true
 
+    extraInitContainers:
+      - name: init-dags-sync
+        image: amazon/aws-cli:2.0.57
+        command: ["sh", "-c", "aws s3 sync s3://bitesla-dag-storage/dags /opt/airflow/dags"]
+        env:
+          - name: AWS_ACCESS_KEY_ID
+            valueFrom:
+              secretKeyRef:
+                name: aws-credentials
+                key: aws_access_key_id
+          - name: AWS_SECRET_ACCESS_KEY
+            valueFrom:
+              secretKeyRef:
+                name: aws-credentials
+                key: aws_secret_access_key
+        volumeMounts:
+          - name: dags
+            mountPath: /opt/airflow/dags
+
 ###################################
 ## COMPONENT | Airflow Scheduler
 ###################################
@@ -443,6 +465,25 @@ scheduler:
   ## if we add the annotation: "cluster-autoscaler.kubernetes.io/safe-to-evict" = "true"
   ##
   safeToEvict: true
+
+  # extraInitContainers:
+  #     - name: init-dags-sync
+  #       image: amazon/aws-cli:2.0.57
+  #       command: ["sh", "-c", "aws s3 sync s3://bitesla-dag-storage/dags /opt/airflow/dags"]
+  #       env:
+  #         - name: AWS_ACCESS_KEY_ID
+  #           valueFrom:
+  #             secretKeyRef:
+  #               name: aws-credentials
+  #               key: aws_access_key_id
+  #         - name: AWS_SECRET_ACCESS_KEY
+  #           valueFrom:
+  #             secretKeyRef:
+  #               name: aws-credentials
+  #               key: aws_secret_access_key
+  #       volumeMounts:
+  #         - name: dags
+  #           mountPath: /opt/airflow/dags
 
   ## configs for the PodDisruptionBudget of the scheduler
   ##
@@ -533,7 +574,8 @@ scheduler:
   ##   extraPipPackages:
   ##     - "SomeProject==1.0.0"
   ##
-  extraPipPackages: []
+  extraPipPackages: 
+    - apache-airflow-providers-amazon
 
   ## extra VolumeMounts for the scheduler Pods
   ## - spec of VolumeMount:
@@ -552,6 +594,7 @@ scheduler:
   ##   https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#container-v1-core
   ##
   extraInitContainers: []
+
 ###################################
 ## COMPONENT | Airflow Webserver
 ###################################
