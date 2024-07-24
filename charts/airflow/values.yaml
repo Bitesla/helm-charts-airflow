@@ -86,8 +86,7 @@ airflow:
   ##   extraPipPackages:
   ##     - "SomeProject==1.0.0"
   ##
-  extraPipPackages:
-    - apache-airflow-providers-amazon
+  extraPipPackages: []
 
   ## pip packages that are protected from upgrade/downgrade by `extraPipPackages`
   ## - [WARNING] Pods will fail to start if `extraPipPackages` would cause these packages to change versions
@@ -99,19 +98,7 @@ airflow:
   ## - spec for EnvVar:
   ##   https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#envvar-v1-core
   ##
-  extraEnv:
-    - name: AWS_ACCESS_KEY_ID
-      valueFrom:
-        secretKeyRef:
-          name: aws-credentials
-          key: aws_access_key_id
-    - name: AWS_SECRET_ACCESS_KEY
-      valueFrom:
-        secretKeyRef:
-          name: aws-credentials
-          key: aws_secret_access_key
-    - name: AWS_DEFAULT_REGION
-      value: "us-east-1"
+  extraEnv: []
 
   ## extra containers for the airflow Pods
   ## - spec for Container:
@@ -129,10 +116,7 @@ airflow:
   ## - spec for Volume:
   ##   https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#volume-v1-core
   ##
-  extraVolumes:
-    - name: dags
-      persistentVolumeClaim:
-        claimName: airflow-dags
+  extraVolumes: []
 
   ## kubernetes cluster domain name
   ## - configured in the kubelet with `--cluster-domain` flag (deprecated):
@@ -388,25 +372,6 @@ airflow:
     ##
     safeToEvict: true
 
-    extraInitContainers:
-      - name: init-dags-sync
-        image: amazon/aws-cli:2.0.57
-        command: ["sh", "-c", "aws s3 sync s3://bitesla-dag-storage/dags /opt/airflow/dags"]
-        env:
-          - name: AWS_ACCESS_KEY_ID
-            valueFrom:
-              secretKeyRef:
-                name: aws-credentials
-                key: aws_access_key_id
-          - name: AWS_SECRET_ACCESS_KEY
-            valueFrom:
-              secretKeyRef:
-                name: aws-credentials
-                key: aws_secret_access_key
-        volumeMounts:
-          - name: dags
-            mountPath: /opt/airflow/dags
-
 ###################################
 ## COMPONENT | Airflow Scheduler
 ###################################
@@ -465,25 +430,6 @@ scheduler:
   ## if we add the annotation: "cluster-autoscaler.kubernetes.io/safe-to-evict" = "true"
   ##
   safeToEvict: true
-
-  # extraInitContainers:
-  #     - name: init-dags-sync
-  #       image: amazon/aws-cli:2.0.57
-  #       command: ["sh", "-c", "aws s3 sync s3://bitesla-dag-storage/dags /opt/airflow/dags"]
-  #       env:
-  #         - name: AWS_ACCESS_KEY_ID
-  #           valueFrom:
-  #             secretKeyRef:
-  #               name: aws-credentials
-  #               key: aws_access_key_id
-  #         - name: AWS_SECRET_ACCESS_KEY
-  #           valueFrom:
-  #             secretKeyRef:
-  #               name: aws-credentials
-  #               key: aws_secret_access_key
-  #       volumeMounts:
-  #         - name: dags
-  #           mountPath: /opt/airflow/dags
 
   ## configs for the PodDisruptionBudget of the scheduler
   ##
@@ -574,8 +520,7 @@ scheduler:
   ##   extraPipPackages:
   ##     - "SomeProject==1.0.0"
   ##
-  extraPipPackages: 
-    - apache-airflow-providers-amazon
+  extraPipPackages: [] 
 
   ## extra VolumeMounts for the scheduler Pods
   ## - spec of VolumeMount:
@@ -1250,11 +1195,11 @@ logs:
 dags:
   ## the airflow dags folder
   ##
-  path: "s3://bitesla-dag-storage/dags"
+  path: "/opt/airflow/dags"
 
   # Disable the default DAGs directory volume
   gitSync:
-    enabled: false
+    enabled: true
   
   persistence:
     enabled: false
@@ -1294,7 +1239,7 @@ dags:
   gitSync:
     ## if the git-sync sidecar container is enabled
     ##
-    enabled: false
+    enabled: true
 
     ## the git-sync container image
     ##
@@ -1321,7 +1266,7 @@ dags:
     ##   # ssh git repo
     ##   repo: "git@github.com:USERNAME/REPOSITORY.git"
     ##
-    repo: ""
+    repo: "https://github.com/Bitesla/airflow-dags.git"
 
     ## the sub-path within your repo where dags are located
     ## - only dags under this path within your repo will be seen by airflow,
@@ -1331,7 +1276,7 @@ dags:
 
     ## the git branch to check out
     ##
-    branch: master
+    branch: main
 
     ## the git revision (tag or hash) to check out
     ##
@@ -1356,7 +1301,7 @@ dags:
 
     ## the name of a pre-created Secret with git http credentials
     ##
-    httpSecret: ""
+    httpSecret: "airflow-http-git-secret"
 
     ## the key in `dags.gitSync.httpSecret` with your git username
     ##
