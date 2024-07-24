@@ -131,8 +131,8 @@ airflow:
   ##
   extraVolumes:
     - name: dags
-    persistentVolumeClaim:
-      claimName: airflow-dags
+      persistentVolumeClaim:
+        claimName: airflow-dags
 
   ## kubernetes cluster domain name
   ## - configured in the kubelet with `--cluster-domain` flag (deprecated):
