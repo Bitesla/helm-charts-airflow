@@ -15,12 +15,12 @@ airflow:
   #   pullSecret: ""
   #   uid: 50000
   #   gid: 0
-
+  
   image:
-    repository: docker.io/library/bitesla-airflow
-    tag: 0.0.1
+    repository: docker.io/developermayur700/bitesla-airflow
+    tag: latest
     pullPolicy: IfNotPresent
-    pullSecret: ""
+    pullSecret: docker-secret
     uid: 50000
     gid: 0
 
