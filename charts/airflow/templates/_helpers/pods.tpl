@@ -1,4 +1,86 @@
 {{/*
+Define a container which syncs a s3 path one-time
+EXAMPLE USAGE: {{ include "airflow.container.s3_initial_sync" (dict "Release" .Release "Values") }}
+*/}}
+{{- define "airflow.container.s3_initial_sync" }}
+- name: dags-s3-initial-sync
+  image: {{ .Values.dags.s3Sync.image.repository }}:{{ .Values.dags.s3Sync.image.tag }}
+  imagePullPolicy: {{ .Values.dags.s3Sync.image.pullPolicy }}
+  resources:
+    {{- toYaml .Values.dags.s3Sync.resources | nindent 4 }}
+  envFrom:
+    {{- include "airflow.envFrom" . | indent 4 }}
+  env:
+    - name: AWS_BUCKET
+      value: {{ .Values.dags.s3Sync.bucketName | quote }}
+    - name: KEY_PATH
+      value: {{ .Values.dags.s3Sync.keyPath | quote }}
+    - name: DEST_PATH
+      value: {{ .Values.dags.workDir | quote}}
+    - name: AIRFLOW_USER_UID
+      value: {{ .Values.airflow.image.uid | quote }}
+    {{- /* this has user-defined variables, so must be included BELOW (so the ABOVE `env` take precedence) */ -}}
+    {{- include "airflow.env" . | indent 4 }}
+  command:
+  # Copy all files from s3 to the dags folder and grant permissions to the airflow user
+    - /bin/sh
+    - -c
+    - aws s3 cp s3://${AWS_BUCKET}/${KEY_PATH} ${DEST_PATH} --exclude "*.pyc" --recursive; chown -R ${AIRFLOW_USER_UID} ${DEST_PATH}
+  volumeMounts:
+    - name: dags-data
+      mountPath: {{ .Values.dags.workDir }}
+{{- end }}
+
+{{/*
+Define a container which regularly syncs a s3 path
+EXAMPLE USAGE: {{ include "airflow.container.s3_sync" (dict "Release" .Release "Values") }}
+*/}}
+{{- define "airflow.container.s3_sync" }}
+- name: dags-s3-sync
+  image: {{ .Values.dags.s3Sync.image.repository }}:{{ .Values.dags.s3Sync.image.tag }}
+  imagePullPolicy: {{ .Values.dags.s3Sync.image.pullPolicy }}
+  resources:
+    {{- toYaml .Values.dags.s3Sync.resources | nindent 4 }}
+  envFrom:
+    {{- include "airflow.envFrom" . | indent 4 }}
+  env:
+    - name: AWS_BUCKET
+      value: {{ .Values.dags.s3Sync.bucketName | quote }}
+    - name: KEY_PATH
+      value: {{ .Values.dags.s3Sync.keyPath | quote }}
+    - name: DEST_PATH
+      value: {{ .Values.dags.workDir | quote}}
+    - name: INTERVAL
+      value: {{ .Values.dags.s3Sync.interval | quote }}
+    - name: AIRFLOW_USER_UID
+      value: {{ .Values.airflow.image.uid | quote }}
+    {{- /* this has user-defined variables, so must be included BELOW (so the ABOVE `env` take precedence) */ -}}
+    {{- include "airflow.env" . | indent 4 }}
+  command:
+  # Sync all files from s3 to the dags folder, grant permissions to the airflow user and sleep
+    - /bin/sh
+    - -c
+    - >
+      while true; do
+        echo "---------------------------------------------------------------------------"
+        echo "Syncing s3://${AWS_BUCKET}/${KEY_PATH} to ${DEST_PATH}"
+        echo "aws s3 sync s3://${AWS_BUCKET}/${KEY_PATH} ${DEST_PATH} --exclude "*.pyc" --delete --exact-timestamps"
+        aws s3 sync s3://${AWS_BUCKET}/${KEY_PATH} ${DEST_PATH} --exclude "*.pyc" --delete --exact-timestamps
+        echo "Finish syncing s3://${AWS_BUCKET}/${KEY_PATH} to ${DEST_PATH}"
+        echo "Grant read access to ${DEST_PATH} for Airflow user ${AIRFLOW_USER_UID}"
+        echo "chown -R ${AIRFLOW_USER_UID} ${DEST_PATH}"
+        chown -R ${AIRFLOW_USER_UID} ${DEST_PATH}
+        echo "Sleep for ${INTERVAL} seconds"
+        echo "sleep ${INTERVAL}"
+        sleep ${INTERVAL};
+      done
+  volumeMounts:
+    - name: dags-data
+      mountPath: {{ .Values.dags.workDir }}
+{{- end }}
+
+
+{{/*
 Define the image configs for airflow containers
 */}}
 {{- define "airflow.image" }}

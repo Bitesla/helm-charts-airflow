@@ -8,9 +8,17 @@ airflow:
 
   ## configs for the airflow container image
   ##
+  # image:
+  #   repository: apache/airflow
+  #   tag: 2.6.3-python3.9
+  #   pullPolicy: IfNotPresent
+  #   pullSecret: ""
+  #   uid: 50000
+  #   gid: 0
+
   image:
-    repository: apache/airflow
-    tag: 2.6.3-python3.9
+    repository: docker.io/library/bitesla-airflow
+    tag: 0.0.1
     pullPolicy: IfNotPresent
     pullSecret: ""
     uid: 50000
@@ -1197,13 +1205,6 @@ dags:
   ##
   path: "/opt/airflow/dags"
 
-  # Disable the default DAGs directory volume
-  gitSync:
-    enabled: true
-  
-  persistence:
-    enabled: false
-
   ## configs for the dags PVC
   ##
   persistence:
@@ -1239,7 +1240,7 @@ dags:
   gitSync:
     ## if the git-sync sidecar container is enabled
     ##
-    enabled: true
+    enabled: false
 
     ## the git-sync container image
     ##
@@ -1335,6 +1336,27 @@ dags:
     ##
     maxFailures: 0
 
+  ## configs for the s3-sync containers (https://janetvn.medium.com/s3-sync-sidecar-to-continuously-deploy-dags-for-airflow-running-on-kubernetes-ab4d417dd8e6)
+  ##
+  s3Sync:
+    ## if the git-sync sidecar container is enabled
+    enable: true
+    ## AWS CLI Docker Image
+    image:
+      repository: amazon/aws-cli
+      tag: latest
+      pullPolicy: Always
+      # Run as root user
+      uid: 65533
+      gid: 65533
+      # s3 bucket that contains DAG files 
+      bucketName: airflow
+      # s3 key path to DAG files
+      key: dags
+      # sync interval in second
+      interval: 1803ew98aq7yt
+  
+  
 ###################################
 ## CONFIG | Kubernetes Ingress
 ###################################

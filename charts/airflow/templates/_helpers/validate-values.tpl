@@ -1,3 +1,22 @@
+{{/* Checks for `dags.s3Sync` */}}
+{{- if .Values.dags.s3Sync.enabled }}
+  {{- if .Values.dags.persistence.enabled }}
+  {{ required "If `dags.s3Sync.enabled=true`, then `persistence.enabled` must be disabled!" nil }}
+  {{- end }}
+  {{- if .Values.dags.gitSync.enabled }}
+  {{ required "If `dags.s3Sync.enabled=true`, then `gitSync.enabled` must be disabled!" nil }}
+  {{- end }}
+  {{- if not .Values.dags.s3Sync.bucketName }}
+  {{ required "If `dags.s3Sync.enabled=true`, then `dags.s3Sync.bucketName` must be non-empty!" nil }}
+  {{- end }}
+  {{- if not .Values.dags.s3Sync.keyPath }}
+  {{ required "If `dags.s3Sync.enabled=true`, then `dags.s3Sync.keyPath` must be non-empty!" nil }}
+  {{- end }}
+  {{- if not .Values.dags.s3Sync.interval }}
+  {{ required "If `dags.s3Sync.enabled=true`, then `dags.s3Sync.interval` must be non-empty!" nil }}
+  {{- end }}
+{{- end }}
+
 {{/* Checks for `.Release.name` */}}
 {{/* NOTE: `allowLongReleaseName` was added when the max length dropped from 43 to 40, and is NOT intended for new deployments */}}
 {{- if .Values.allowLongReleaseName }}
