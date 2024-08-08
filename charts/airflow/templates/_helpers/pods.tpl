@@ -91,6 +91,7 @@ securityContext:
   runAsGroup: {{ .Values.airflow.image.gid }}
 {{- end }}
 
+
 {{/*
 Define the command/entrypoint configs for airflow containers
 */}}
@@ -239,10 +240,7 @@ EXAMPLE USAGE: {{ include "airflow.init_container.wait_for_db_migrations" (dict 
   {{- end }}
 {{- end }}
 
-{{/*
-Define an init-container which installs a list of pip packages
-EXAMPLE USAGE: {{ include "airflow.init_container.install_pip_packages" (dict "Release" .Release "Values" .Values "extraPipPackages" $extraPipPackages) }}
-*/}}
+
 {{- define "airflow.init_container.install_pip_packages" }}
 - name: install-pip-packages
   {{- include "airflow.image" . | indent 2 }}
@@ -256,15 +254,26 @@ EXAMPLE USAGE: {{ include "airflow.init_container.install_pip_packages" (dict "R
     - "bash"
     - "-c"
     - |
-      unset PYTHONUSERBASE && \
-      pip freeze | grep -i {{ range .Values.airflow.protectedPipPackages }}-e {{ printf "%s==" . | quote }} {{ end }} > protected-packages.txt && \
-      pip install --constraint ./protected-packages.txt --user {{ range .extraPipPackages }}{{ . | quote }} {{ end }} && \
-      echo "copying '/home/airflow/.local/' to '/opt/home-airflow-local/.local/'..." && \
-      rsync -ah --stats --delete /home/airflow/.local/ /opt/home-airflow-local/.local/
+      set -e
+      echo "Starting pip package installation..."
+      unset PYTHONUSERBASE
+      echo "Generating list of protected packages..."
+      pip freeze | grep -i {{ range .Values.airflow.protectedPipPackages }}-e {{ printf "%s==" . | quote }} {{ end }} > protected-packages.txt
+      cat protected-packages.txt
+      echo "Installing extra pip packages..."
+      pip install --constraint ./protected-packages.txt --user {{ range .extraPipPackages }}{{ . | quote }} {{ end }}
+      echo "Copying installed packages to '/opt/home-airflow-local/.local/'..."
+      if [ -d "/home/airflow/.local/" ]; then
+        rsync -ah --stats --delete /home/airflow/.local/ /opt/home-airflow-local/.local/
+      else
+        echo "Warning: /home/airflow/.local/ does not exist. Skipping rsync."
+      fi
+      echo "Pip package installation and sync complete."
   volumeMounts:
     - name: home-airflow-local
       mountPath: /opt/home-airflow-local
 {{- end }}
+
 
 {{/*
 Define a container which regularly syncs a git-repo
