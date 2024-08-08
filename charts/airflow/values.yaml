@@ -15,7 +15,7 @@ airflow:
   #   pullSecret: ""
   #   uid: 50000
   #   gid: 0
-  
+
   image:
     repository: docker.io/developermayur700/bitesla-airflow
     tag: latest
@@ -1350,12 +1350,22 @@ dags:
       uid: 65533
       gid: 65533
       # s3 bucket that contains DAG files 
-      bucketName: airflow
+      bucketName: bitesla-dag-storage
       # s3 key path to DAG files
       key: dags
       # sync interval in second
-      interval: 1803ew98aq7yt
-  
+      interval: 10
+      env:
+        - name: AWS_ACCESS_KEY_ID
+          valueFrom:
+            secretKeyRef:
+              name: aws-secret
+              key: AWS_ACCESS_KEY_ID
+        - name: AWS_SECRET_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: aws-secret
+              key: AWS_SECRET_ACCESS_KEY
   
 ###################################
 ## CONFIG | Kubernetes Ingress
