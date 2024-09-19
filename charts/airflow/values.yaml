@@ -45,7 +45,7 @@ airflow:
   webserverSecretKey: "5xZoGohYiPax9VmHVuCvOd"
   
   config: {}
-    # AIRFLOW__CORE__DAGS_FOLDER: "s3://bitesla-dag-storage/dags"
+  # AIRFLOW__CORE__DAGS_FOLDER: "s3://bitesla-dag-storage/dags"
 
   ## a list of users to create
   ## - templates can ONLY be used in: `password`, `email`, `firstName`, `lastName`
@@ -69,7 +69,6 @@ airflow:
   ## - when `false`, users will only update one-time, after each `helm upgrade`
   ##
   usersUpdate: true
-
   
   connections: []
   connectionsTemplates: {}
@@ -89,10 +88,6 @@ airflow:
   podAnnotations: {}
 
   ## extra pip packages to install in airflow Pods
-  ##
-  ## ____ EXAMPLE _______________
-  ##   extraPipPackages:
-  ##     - "SomeProject==1.0.0"
   ##
   extraPipPackages: []
 
@@ -222,10 +217,6 @@ airflow:
     shareProcessNamespace: false
 
     ## extra pip packages to install in the Pod template
-    ##
-    ## ____ EXAMPLE _______________
-    ##   extraPipPackages:
-    ##     - "SomeProject==1.0.0"
     ##
     extraPipPackages: []
 
@@ -524,10 +515,6 @@ scheduler:
 
   ## extra pip packages to install in the scheduler Pods
   ##
-  ## ____ EXAMPLE _______________
-  ##   extraPipPackages:
-  ##     - "SomeProject==1.0.0"
-  ##
   extraPipPackages: [] 
 
   ## extra VolumeMounts for the scheduler Pods
@@ -691,10 +678,12 @@ web:
     timeoutSeconds: 5
     failureThreshold: 6
 
-  extraPipPackages:
-    - "pyjwt"
-    - "requests"
-    - "cryptography"
+  extraPipPackages: []
+
+  # extraPipPackages:
+  #   - "pyjwt"
+  #   - "requests"
+  #   - "cryptography"
 
   ## extra VolumeMounts for the web Pods
   ## - spec for VolumeMount:
@@ -880,10 +869,6 @@ workers:
 
   ## extra pip packages to install in the worker Pod
   ##
-  ## ____ EXAMPLE _______________
-  ##   extraPipPackages:
-  ##     - "SomeProject==1.0.0"
-  ##
   extraPipPackages: []
 
   ## extra VolumeMounts for the worker Pods
@@ -998,10 +983,6 @@ triggerer:
     failureThreshold: 5
 
   ## extra pip packages to install in the triggerer Pod
-  ##
-  ## ____ EXAMPLE _______________
-  ##   extraPipPackages:
-  ##     - "SomeProject==1.0.0"
   ##
   extraPipPackages: []
 
@@ -1140,10 +1121,6 @@ flower:
     failureThreshold: 6
 
   ## extra pip packages to install in the flower Pod
-  ##
-  ## ____ EXAMPLE _______________
-  ##   extraPipPackages:
-  ##     - "SomeProject==1.0.0"
   ##
   extraPipPackages: []
 
@@ -1349,23 +1326,23 @@ dags:
       # Run as root user
       uid: 65533
       gid: 65533
-      # s3 bucket that contains DAG files 
-      bucketName: bitesla-dag-storage
-      # s3 key path to DAG files
-      key: dags
-      # sync interval in second
-      interval: 10
-      env:
-        - name: AWS_ACCESS_KEY_ID
-          valueFrom:
-            secretKeyRef:
-              name: docker-secret
-              key: AWS_ACCESS_KEY_ID
-        - name: AWS_SECRET_ACCESS_KEY
-          valueFrom:
-            secretKeyRef:
-              name: docker-secret
-              key: AWS_SECRET_ACCESS_KEY
+    # s3 bucket that contains DAG files 
+    bucketName: "bitesla-dag-storage"
+    # s3 key path to DAG files
+    keyPath: "dags"
+    # sync interval in second
+    interval: "30"
+    env:
+      - name: AWS_ACCESS_KEY_ID
+        valueFrom:
+          secretKeyRef:
+            name: docker-secret
+            key: AWS_ACCESS_KEY_ID
+      - name: AWS_SECRET_ACCESS_KEY
+        valueFrom:
+          secretKeyRef:
+            name: docker-secret
+            key: AWS_SECRET_ACCESS_KEY
   
 ###################################
 ## CONFIG | Kubernetes Ingress
@@ -1544,62 +1521,6 @@ serviceAccount:
   ##
   annotations: {}
 
-###################################
-## CONFIG | Kubernetes Extra Manifests
-###################################
-## a list of extra Kubernetes manifests that will be deployed alongside the chart
-## - helm templates within these strings will be rendered
-##
-## ____ EXAMPLE _______________
-##   extraManifests:
-##     - |
-##       apiVersion: v1
-##       kind: Secret
-##       metadata:
-##         name: airflow-postgres
-##       data:
-##         postgresql-password: {{ `password1` | b64enc | quote }}
-##     - |
-##       apiVersion: apps/v1
-##       kind: Deployment
-##       metadata:
-##         name: {{ include "airflow.fullname" . }}-busybox
-##         labels:
-##           app: {{ include "airflow.labels.app" . }}
-##           component: busybox
-##           chart: {{ include "airflow.labels.chart" . }}
-##           release: {{ .Release.Name }}
-##           heritage: {{ .Release.Service }}
-##       spec:
-##         replicas: 1
-##         selector:
-##           matchLabels:
-##             app: {{ include "airflow.labels.app" . }}
-##             component: busybox
-##             release: {{ .Release.Name }}
-##         template:
-##           metadata:
-##             labels:
-##               app: {{ include "airflow.labels.app" . }}
-##               component: busybox
-##               release: {{ .Release.Name }}
-##           spec:
-##             containers:
-##               - name: busybox
-##                 image: busybox:1.35
-##                 command:
-##                   - "/bin/sh"
-##                   - "-c"
-##                 args:
-##                   - |
-##                     ## to break the infinite loop when we receive SIGTERM
-##                     trap "exit 0" SIGTERM;
-##                     ## keep the container running (so people can `kubectl exec -it` into it)
-##                     while true; do
-##                       echo "I am alive...";
-##                       sleep 30;
-##                     done
-##
 extraManifests: []
 
 ###################################
