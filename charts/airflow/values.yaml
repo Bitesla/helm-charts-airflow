@@ -8,21 +8,21 @@ airflow:
 
   ## configs for the airflow container image
   ##
-  # image:
-  #   repository: apache/airflow
-  #   tag: 2.6.3-python3.9
-  #   pullPolicy: IfNotPresent
-  #   pullSecret: ""
-  #   uid: 50000
-  #   gid: 0
-
   image:
-    repository: docker.io/developermayur700/bitesla-airflow
-    tag: latest
+    repository: apache/airflow
+    tag: 2.6.3-python3.9
     pullPolicy: IfNotPresent
-    pullSecret: docker-secret
+    pullSecret: ""
     uid: 50000
     gid: 0
+
+  # image:
+  #   repository: docker.io/developermayur700/bitesla-airflow
+  #   tag: latest
+  #   pullPolicy: IfNotPresent
+  #   pullSecret: docker-secret
+  #   uid: 50000
+  #   gid: 0
 
   ## the airflow executor type to use
   ## - allowed values: "CeleryExecutor", "KubernetesExecutor", "CeleryKubernetesExecutor"
@@ -44,8 +44,8 @@ airflow:
   ##
   webserverSecretKey: "5xZoGohYiPax9VmHVuCvOd"
   
-  config: {}
-  # AIRFLOW__CORE__DAGS_FOLDER: "s3://bitesla-dag-storage/dags"
+  config:
+    AIRFLOW__CORE__DAGS_FOLDER: "s3://bitesla-dag-storage/dags"
 
   ## a list of users to create
   ## - templates can ONLY be used in: `password`, `email`, `firstName`, `lastName`
@@ -1244,7 +1244,8 @@ dags:
     ##   # ssh git repo
     ##   repo: "git@github.com:USERNAME/REPOSITORY.git"
     ##
-    repo: "https://github.com/Bitesla/airflow-dags.git"
+    # repo: "https://github.com/Bitesla/airflow-dags.git"
+    repo: "https://github.com/BlocksparkMayur/Bitesla-airflow-dags.git"
 
     ## the sub-path within your repo where dags are located
     ## - only dags under this path within your repo will be seen by airflow,

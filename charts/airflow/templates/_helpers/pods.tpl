@@ -16,7 +16,7 @@ EXAMPLE USAGE: {{ include "airflow.container.s3_initial_sync" (dict "Release" .R
     - name: KEY_PATH
       value: {{ .Values.dags.s3Sync.keyPath | quote }}
     - name: DEST_PATH
-      value: {{ .Values.dags.workDir | quote}}
+      value: {{ .Values.dags.path | quote}}
     - name: AIRFLOW_USER_UID
       value: {{ .Values.airflow.image.uid | quote }}
     {{- /* this has user-defined variables, so must be included BELOW (so the ABOVE `env` take precedence) */ -}}
@@ -28,7 +28,7 @@ EXAMPLE USAGE: {{ include "airflow.container.s3_initial_sync" (dict "Release" .R
     - aws s3 cp s3://${AWS_BUCKET}/${KEY_PATH} ${DEST_PATH} --exclude "*.pyc" --recursive; chown -R ${AIRFLOW_USER_UID} ${DEST_PATH}
   volumeMounts:
     - name: dags-data
-      mountPath: {{ .Values.dags.workDir }}
+      mountPath: {{ .Values.dags.path }}
 {{- end }}
 
 {{/*
@@ -49,7 +49,7 @@ EXAMPLE USAGE: {{ include "airflow.container.s3_sync" (dict "Release" .Release "
     - name: KEY_PATH
       value: {{ .Values.dags.s3Sync.keyPath | quote }}
     - name: DEST_PATH
-      value: {{ .Values.dags.workDir | quote}}
+      value: {{ .Values.dags.path | quote}}
     - name: INTERVAL
       value: {{ .Values.dags.s3Sync.interval | quote }}
     - name: AIRFLOW_USER_UID
@@ -76,7 +76,7 @@ EXAMPLE USAGE: {{ include "airflow.container.s3_sync" (dict "Release" .Release "
       done
   volumeMounts:
     - name: dags-data
-      mountPath: {{ .Values.dags.workDir }}
+      mountPath: {{ .Values.dags.path }}
 {{- end }}
 
 
