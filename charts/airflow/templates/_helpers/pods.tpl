@@ -75,10 +75,7 @@
       mountPath: {{ .Values.dags.path }}
 {{- end }}
 
-
-{{/*
-Define the image configs for airflow containers
-*/}}
+{{/* Define the image configs for airflow containers */}}
 {{- define "airflow.image" }}
 image: {{ .Values.airflow.image.repository }}:{{ .Values.airflow.image.tag }}
 imagePullPolicy: {{ .Values.airflow.image.pullPolicy }}
@@ -100,10 +97,8 @@ Define the command/entrypoint configs for airflow containers
 {{- end }}
 {{- end }}
 
-{{/*
-Define the nodeSelector for airflow pods
-EXAMPLE USAGE: {{ include "airflow.nodeSelector" (dict "Release" .Release "Values" .Values "nodeSelector" $nodeSelector) }}
-*/}}
+{{/* Define the nodeSelector for airflow pods */}}
+{{/* EXAMPLE USAGE: {{ include "airflow.nodeSelector" (dict "Release" .Release "Values" .Values "nodeSelector" $nodeSelector) }} */}}
 {{- define "airflow.podNodeSelector" }}
 {{- .nodeSelector | default .Values.airflow.defaultNodeSelector | toYaml }}
 {{- end }}
@@ -159,10 +154,8 @@ EXAMPLE USAGE: {{ include "airflow.init_container.check_db" (dict "Release" .Rel
   {{- end }}
 {{- end }}
 
-{{/*
-Define an init-container which waits for DB migrations
-EXAMPLE USAGE: {{ include "airflow.init_container.wait_for_db_migrations" (dict "Release" .Release "Values" .Values "volumeMounts" $volumeMounts) }}
-*/}}
+{{/* Define an init-container which waits for DB migrations */}}
+{{/* EXAMPLE USAGE: {{ include "airflow.init_container.wait_for_db_migrations" (dict "Release" .Release "Values" .Values "volumeMounts" $volumeMounts) }} */}}
 {{- define "airflow.init_container.wait_for_db_migrations" }}
 - name: wait-for-db-migrations
   {{- include "airflow.image" . | indent 2 }}
@@ -271,10 +264,8 @@ EXAMPLE USAGE: {{ include "airflow.init_container.wait_for_db_migrations" (dict 
 {{- end }}
 
 
-{{/*
-Define a container which regularly syncs a git-repo
-EXAMPLE USAGE: {{ include "airflow.container.git_sync" (dict "Release" .Release "Values" .Values "sync_one_time" "true") }}
-*/}}
+{{/* Define a container which regularly syncs a git-repo */}}
+{{/* EXAMPLE USAGE: {{ include "airflow.container.git_sync" (dict "Release" .Release "Values" .Values "sync_one_time" "true") }} */}}
 {{- define "airflow.container.git_sync" }}
 {{- if .sync_one_time }}
 - name: dags-git-clone
