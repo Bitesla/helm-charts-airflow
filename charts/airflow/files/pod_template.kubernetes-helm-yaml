@@ -51,9 +51,11 @@ spec:
     {{- if .Values.dags.gitSync.enabled }}
     {{- include "airflow.container.git_sync" (dict "Release" .Release "Values" .Values "sync_one_time" "true") | indent 4 }}
     {{- end }}
+
     {{- if .Values.dags.s3Sync.enabled }}
-    {{- include "airflow.container.s3_initial_sync" (dict "Release" .Release "Values" .Values "sync_one_time" "true") | indent 4 }}
+    {{ include "airflow.container.s3initialSync" (dict "Release" .Release "Values") }}
     {{- end }}
+
     {{- if .Values.airflow.kubernetesPodTemplate.extraInitContainers }}
     {{- toYaml .Values.airflow.kubernetesPodTemplate.extraInitContainers | nindent 4 }}
     {{- end }}
@@ -81,9 +83,11 @@ spec:
       volumeMounts:
         {{- $volumeMounts | indent 8 }}
       {{- end }}
+
     {{- if .Values.dags.s3Sync.enabled }}
-    {{- include "airflow.container.s3_sync" (dict "Release" .Release "Values" .Values) | indent 4 }}
+    {{ include "airflow.container.s3Sync" (dict "Release" .Release "Values") }}
     {{- end }}
+
     {{- if .Values.airflow.kubernetesPodTemplate.extraContainers }}
     {{- toYaml .Values.airflow.kubernetesPodTemplate.extraContainers | nindent 4 }}
     {{- end }}
@@ -91,4 +95,7 @@ spec:
   {{- if $volumes }}
   volumes:
     {{- $volumes | indent 4 }}
+    # Add a volume for the DAGs directory synced by S3
+    - name: dags-data
+      emptyDir: {}  # or use another volume type like persistentVolumeClaim, if needed
   {{- end }}

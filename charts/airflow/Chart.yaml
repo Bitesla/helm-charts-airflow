@@ -14,7 +14,7 @@ keywords:
   - airflow
   - dag
   - workflow
-dependencies:
+dependencies:6
   - name: postgresql
     version: 8.6.4
     repository: https://charts.helm.sh/stable

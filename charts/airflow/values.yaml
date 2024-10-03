@@ -1332,7 +1332,7 @@ dags:
     # s3 key path to DAG files
     keyPath: "dags"
     # sync interval in second
-    interval: "30"
+    interval: 30
     env:
       - name: AWS_ACCESS_KEY_ID
         valueFrom:
@@ -1344,6 +1344,7 @@ dags:
           secretKeyRef:
             name: docker-secret
             key: AWS_SECRET_ACCESS_KEY
+      
   
 ###################################
 ## CONFIG | Kubernetes Ingress

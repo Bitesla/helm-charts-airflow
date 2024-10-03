@@ -1,9 +1,7 @@
-{{/*
-Define a container which syncs a s3 path one-time
-EXAMPLE USAGE: {{ include "airflow.container.s3_initial_sync" (dict "Release" .Release "Values") }}
-*/}}
-{{- define "airflow.container.s3_initial_sync" }}
-- name: dags-s3-initial-sync
+{{/* Define a container which syncs a s3 path one-time */}}
+{{/* EXAMPLE USAGE: {{ include "airflow.container.s3initialSync" (dict "Release" .Release "Values") }} */}}
+{{- define "airflow.container.s3initialSync" }}
+- name: {{ include "airflow.fullname" . }}-s3initialSync
   image: {{ .Values.dags.s3Sync.image.repository }}:{{ .Values.dags.s3Sync.image.tag }}
   imagePullPolicy: {{ .Values.dags.s3Sync.image.pullPolicy }}
   resources:
@@ -31,12 +29,10 @@ EXAMPLE USAGE: {{ include "airflow.container.s3_initial_sync" (dict "Release" .R
       mountPath: {{ .Values.dags.path }}
 {{- end }}
 
-{{/*
-Define a container which regularly syncs a s3 path
-EXAMPLE USAGE: {{ include "airflow.container.s3_sync" (dict "Release" .Release "Values") }}
-*/}}
-{{- define "airflow.container.s3_sync" }}
-- name: dags-s3-sync
+{{/* Define a container which regularly syncs a s3 path */}}
+{{/* EXAMPLE USAGE: {{ include "airflow.container.s3_sync" (dict "Release" .Release "Values") }} */}}
+{{- define "airflow.container.s3Sync" }}
+- name: {{ include "airflow.fullname" . }}-s3Sync
   image: {{ .Values.dags.s3Sync.image.repository }}:{{ .Values.dags.s3Sync.image.tag }}
   imagePullPolicy: {{ .Values.dags.s3Sync.image.pullPolicy }}
   resources:
@@ -454,6 +450,9 @@ EXAMPLE USAGE: {{ include "airflow.volumeMounts" (dict "Release" .Release "Value
 {{- else if .Values.dags.gitSync.enabled }}
 - name: dags-data
   mountPath: {{ .Values.dags.path }}
+{{- else if .Values.dags.s3Sync.enabled }}
+- name: dags-data
+  mountPath: {{ .Values.dags.path }}
 {{- end }}
 
 {{- /* logs */ -}}
@@ -515,6 +514,9 @@ EXAMPLE USAGE: {{ include "airflow.volumes" (dict "Release" .Release "Values" .V
     claimName: {{ printf "%s-dags" (include "airflow.fullname" . | trunc 58) }}
     {{- end }}
 {{- else if .Values.dags.gitSync.enabled }}
+- name: dags-data
+  emptyDir: {}
+{{- else if .Values.dags.s3Sync.enabled }}
 - name: dags-data
   emptyDir: {}
 {{- end }}
