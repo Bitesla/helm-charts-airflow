@@ -168,6 +168,3 @@ spec:
             {{- end }}
             defaultMode: 0644
         {{- end }}
-        # Add a volume for the DAGs directory synced by S3
-        - name: dags-data
-          emptyDir: {}  # or use another volume type like persistentVolumeClaim, if needed

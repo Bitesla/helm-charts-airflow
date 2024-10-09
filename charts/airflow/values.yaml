@@ -1217,7 +1217,7 @@ dags:
   gitSync:
     ## if the git-sync sidecar container is enabled
     ##
-    enabled: false
+    enabled: true
 
     ## the git-sync container image
     ##
@@ -1244,8 +1244,7 @@ dags:
     ##   # ssh git repo
     ##   repo: "git@github.com:USERNAME/REPOSITORY.git"
     ##
-    # repo: "https://github.com/Bitesla/airflow-dags.git"
-    repo: "https://github.com/BlocksparkMayur/Bitesla-airflow-dags.git"
+    repo: "https://github.com/Bitesla/airflow-dags.git"
 
     ## the sub-path within your repo where dags are located
     ## - only dags under this path within your repo will be seen by airflow,
@@ -1318,7 +1317,7 @@ dags:
   ##
   s3Sync:
     ## if the git-sync sidecar container is enabled
-    enable: true
+    enable: false
     ## AWS CLI Docker Image
     image:
       repository: amazon/aws-cli

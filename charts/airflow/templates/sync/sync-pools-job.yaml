@@ -109,7 +109,4 @@ spec:
         - name: scripts
           secret:
             secretName: {{ include "airflow.fullname" . }}-sync-pools
-        # Add a volume for the DAGs directory synced by S3
-        - name: dags-data
-          emptyDir: {}  # or use another volume type like persistentVolumeClaim, if needed
 {{- end }}
